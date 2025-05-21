@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 function Createpost() {
   const [title, setTitle] = useState("");
@@ -32,10 +33,10 @@ function Createpost() {
     });
 
     if (response.ok) {
-      alert("Post created!");
+      toast.success("Post created!");
       navigate("/dashboard");
     } else {
-      alert("Failed to create post.");
+      toast.console.error("Failed to create post.");
     }
   };
 

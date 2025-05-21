@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -53,6 +54,7 @@ function Register() {
 
       if (response.ok) {
         setMessage("Registration successful!");
+        toast.success("Registration successful");
         Cookies.set("userEmail", email);
         Cookies.set("userPassword", password);
         navigate("/login");

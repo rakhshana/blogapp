@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Dashboard() {
   const [posts, setPosts] = useState([]);
@@ -29,11 +30,6 @@ function Dashboard() {
   }, [userId]);
 
   const handleDelete = async (postId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this post?"
-    );
-    if (!confirmed) return;
-
     const response = await fetch(
       `http://localhost:4000/api/auth/delete/${postId}`,
       {
@@ -43,9 +39,9 @@ function Dashboard() {
 
     if (response.ok) {
       setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-      alert("Post deleted successfully.");
+      toast.success("Post deleted successfully.");
     } else {
-      alert("Failed to delete post.");
+      toast.error("Failed to delete post.");
     }
   };
 
