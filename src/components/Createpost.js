@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Paper,
+  Container,
+  AppBar,
+  Toolbar,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -31,30 +40,66 @@ function Createpost() {
   };
 
   return (
-    <Box p={3}>
-      <Typography variant="h5" gutterBottom>
-        Create New Post
-      </Typography>
-      <TextField
-        fullWidth
-        label="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Content"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        margin="normal"
-        multiline
-        rows={4}
-      />
-      <Button variant="contained" onClick={handleCreate} sx={{ mt: 2 }}>
-        Submit
-      </Button>
-    </Box>
+    <div style={{ backgroundColor: "#FAF0E6", minHeight: "100vh" }}>
+      <AppBar position="static" sx={{ backgroundColor: "#DC143C" }}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Dashboard
+          </Typography>
+          <Button color="inherit" onClick={() => navigate("/dashboard")}>
+            View Posts
+          </Button>
+          <Button color="inherit" onClick={() => navigate("/")}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <br />
+
+      <Container maxWidth="md">
+        <Paper elevation={6} sx={{ padding: 4, borderRadius: 3 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Create New Post
+          </Typography>
+          <TextField
+            fullWidth
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            margin="normal"
+            sx={{ backgroundColor: "#fff" }}
+          />
+          <TextField
+            fullWidth
+            label="Content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            margin="normal"
+            multiline
+            rows={6}
+            sx={{ backgroundColor: "#fff" }}
+          />
+          <Box mt={3} textAlign="center">
+            <Button
+              variant="contained"
+              onClick={handleCreate}
+              sx={{
+                backgroundColor: "#DC143C",
+                color: "white",
+                px: 5,
+                py: 1.5,
+                borderRadius: 2,
+                "&:hover": {
+                  backgroundColor: "#b01032",
+                },
+              }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
+    </div>
   );
 }
 

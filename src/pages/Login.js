@@ -71,7 +71,7 @@ function Signin() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundImage: `url('/red.webp')`,
+        backgroundColor: "#EFDECD",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -93,7 +93,12 @@ function Signin() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h5" component="h3" gutterBottom>
+        <Typography
+          variant="h5"
+          component="h3"
+          gutterBottom
+          sx={{ fontFamily: "'Montserrat', sans-serif" }}
+        >
           Login
         </Typography>
 
@@ -121,7 +126,7 @@ function Signin() {
           style={{ marginBottom: "15px" }}
         />
 
-        <Button variant="contained" type="submit" color="success" fullWidth>
+        <Button variant="contained" type="submit" color="error" fullWidth>
           Login
         </Button>
 

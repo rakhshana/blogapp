@@ -7,10 +7,10 @@ import {
   Typography,
   AppBar,
   Toolbar,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-
-const displayUrl = process.env.REACT_APP_API_DISPLAY;
 
 function Dashboard() {
   const [posts, setPosts] = useState([]);
@@ -26,11 +26,32 @@ function Dashboard() {
       setPosts(data);
     };
     fetchPosts();
-  }, []);
+  }, [userId]);
+
+  const handleDelete = async (postId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post?"
+    );
+    if (!confirmed) return;
+
+    const response = await fetch(
+      `http://localhost:4000/api/auth/delete/${postId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response.ok) {
+      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+      alert("Post deleted successfully.");
+    } else {
+      alert("Failed to delete post.");
+    }
+  };
 
   return (
-    <div>
-      <AppBar position="static">
+    <div style={{ backgroundColor: "#FAF0E6", minHeight: "100vh" }}>
+      <AppBar position="static" sx={{ backgroundColor: "#DC143C" }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Dashboard
@@ -48,11 +69,22 @@ function Dashboard() {
         {posts.length === 0 ? (
           <Typography>No posts found.</Typography>
         ) : (
-          posts.map((post, idx) => (
-            <Card key={idx} sx={{ marginBottom: "20px" }}>
+          posts.map((post) => (
+            <Card
+              key={post._id}
+              sx={{ marginBottom: "20px", position: "relative" }}
+            >
               <CardContent>
                 <Typography variant="h6">{post.title}</Typography>
                 <Typography>{post.content}</Typography>
+
+                <IconButton
+                  onClick={() => handleDelete(post._id)}
+                  sx={{ position: "absolute", top: 8, right: 8 }}
+                  aria-label="delete"
+                >
+                  <DeleteIcon color="error" />
+                </IconButton>
               </CardContent>
             </Card>
           ))

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -72,7 +72,7 @@ function Register() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundImage: `url('/red.webp')`,
+        backgroundColor: "#EFDECD",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -97,7 +97,14 @@ function Register() {
             alignItems: "center",
           }}
         >
-          <h2>Register</h2>
+          <Typography
+            variant="h5"
+            component="h3"
+            gutterBottom
+            sx={{ fontFamily: "'Montserrat', sans-serif" }}
+          >
+            Register
+          </Typography>
 
           <div style={{ marginBottom: "15px", width: "100%" }}>
             <TextField
@@ -141,7 +148,7 @@ function Register() {
             />
           </div>
 
-          <Button variant="contained" type="submit" color="success" fullWidth>
+          <Button variant="contained" type="submit" color="error" fullWidth>
             Register
           </Button>
 

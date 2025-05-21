@@ -26,15 +26,21 @@ function Home() {
       <div
         style={{
           position: "relative",
-          top: "-90px",
+          top: "-120px",
           textAlign: "center",
           color: "white",
           fontFamily: "'Poppins', sans-serif",
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ fontFamily: "Dancing Script, cursive" }}
+        >
           Publish your passions, your way
         </Typography>
+        <br />
         <Button
           variant="contained"
           color="success"
