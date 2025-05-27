@@ -7,6 +7,8 @@ import Dashboard from "./components/Navbar";
 import CreatePost from "./components/Createpost";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import BlogWall from "./pages/BlogWall";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create" element={<CreatePost />} />
         <Route path="*" element={<Home />} />
+        <Route path="/wall" element={<BlogWall />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={2000} />
     </div>

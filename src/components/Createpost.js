@@ -47,8 +47,14 @@ function Createpost() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Dashboard
           </Typography>
+          <Button color="inherit" onClick={() => navigate("/create")}>
+            Create Post
+          </Button>
           <Button color="inherit" onClick={() => navigate("/dashboard")}>
             View Posts
+          </Button>
+          <Button color="inherit" onClick={() => navigate("/profile")}>
+            Profile
           </Button>
           <Button color="inherit" onClick={() => navigate("/")}>
             Logout

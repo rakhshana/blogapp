@@ -1,12 +1,17 @@
 import React from "react";
 import { Button, Typography } from "@mui/material";
+import BlogWall from "./BlogWall";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleLoginClick = () => {
     navigate("/login");
+  };
+
+  const handleExploreClick = () => {
+    navigate("/wall");
   };
 
   return (
@@ -45,9 +50,20 @@ function Home() {
             variant="contained"
             color="success"
             size="large"
-            onClick={handleClick}
+            onClick={handleLoginClick}
+            sx={{ marginBottom: "1rem", borderRadius: "8px", width: "200px" }}
           >
             Create your Blog
+          </Button>
+          <br />
+          <Button
+            variant="contained"
+            color="success"
+            size="large"
+            onClick={handleExploreClick}
+            sx={{ marginBottom: "1rem", borderRadius: "8px", width: "200px" }}
+          >
+            Explore Blogs
           </Button>
         </div>
       </div>

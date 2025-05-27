@@ -55,6 +55,12 @@ function Dashboard() {
           <Button color="inherit" onClick={() => navigate("/create")}>
             Create Post
           </Button>
+          <Button color="inherit" onClick={() => navigate("/dashboard")}>
+            View Posts
+          </Button>
+          <Button color="inherit" onClick={() => navigate("/profile")}>
+            Profile
+          </Button>
           <Button color="inherit" onClick={() => navigate("/")}>
             Logout
           </Button>

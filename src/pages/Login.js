@@ -47,8 +47,10 @@ function Signin() {
       });
 
       const data = await response.json();
+      console.log("Response data:", data);
 
       if (response.ok) {
+        localStorage.setItem("userId", data.userId);
         Cookies.set("isLoggedIn", "true", { expires: 7 });
         Cookies.set("userEmail", email);
         Cookies.set("userPassword", password);
