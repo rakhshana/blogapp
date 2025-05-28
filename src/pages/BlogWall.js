@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   TextField,
+  CardMedia,
   Button,
   Grid,
   Box,
@@ -104,21 +105,28 @@ function BlogWall() {
 
         <Grid container spacing={3} justifyContent="center">
           {posts.map((post) => {
-            console.log("Post Creator:", post.userId); // <-- Check creator data here
+            console.log("Post Creator:", post.userId);
 
             return (
               <Grid item xs={12} sm={10} md={8} key={post._id}>
                 <Card
                   sx={{
-                    backgroundColor: "#f5f5dc", // light beige
+                    backgroundColor: "#f5f5dc",
                     borderRadius: "16px",
                     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
                     margin: "1.5rem 0",
                     padding: "1rem",
                   }}
                 >
+                  {post.image && (
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={`http://localhost:4000/uploads/${post.image}`}
+                      alt={post.title}
+                    />
+                  )}
                   <CardContent>
-                    {/* Post Title + Tooltip */}
                     <Box
                       display="flex"
                       alignItems="center"
@@ -179,7 +187,7 @@ function BlogWall() {
                           placement="top"
                         >
                           <IconButton>
-                            <InfoIcon color="action" />
+                            <InfoIcon color="info" />
                           </IconButton>
                         </Tooltip>
                       )}
@@ -205,7 +213,6 @@ function BlogWall() {
                       <Typography>{post.likes?.length || 0} Likes</Typography>
                     </Box>
 
-                    {/* Comments Input */}
                     <Box mt={2}>
                       <TextField
                         size="small"
@@ -227,7 +234,6 @@ function BlogWall() {
                       </Button>
                     </Box>
 
-                    {/* Show Comments */}
                     {post.comments?.length > 0 && (
                       <Box mt={2}>
                         <Typography

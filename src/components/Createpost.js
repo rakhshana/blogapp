@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 function Createpost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
 
   const handleCreate = async () => {
@@ -26,17 +27,24 @@ function Createpost() {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("userId", userId);
+    if (image) {
+      formData.append("image", image);
+    }
+
     const response = await fetch("http://localhost:4000/api/auth/create", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content, userId }),
+      body: formData,
     });
 
     if (response.ok) {
       toast.success("Post created!");
       navigate("/dashboard");
     } else {
-      toast.console.error("Failed to create post.");
+      toast.error("Failed to create post.");
     }
   };
 
@@ -68,6 +76,7 @@ function Createpost() {
           <Typography variant="h4" align="center" gutterBottom>
             Create New Post
           </Typography>
+
           <TextField
             fullWidth
             label="Title"
@@ -86,6 +95,15 @@ function Createpost() {
             rows={6}
             sx={{ backgroundColor: "#fff" }}
           />
+
+          <Box mt={2}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+            />
+          </Box>
+
           <Box mt={3} textAlign="center">
             <Button
               variant="contained"

@@ -7,6 +7,7 @@ import {
   Typography,
   AppBar,
   Toolbar,
+  CardMedia,
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -76,6 +77,14 @@ function Dashboard() {
               key={post._id}
               sx={{ marginBottom: "20px", position: "relative" }}
             >
+              {post.image && (
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={`http://localhost:4000/uploads/${post.image}`}
+                  alt={post.title}
+                />
+              )}
               <CardContent>
                 <Typography variant="h6">{post.title}</Typography>
                 <Typography>{post.content}</Typography>
