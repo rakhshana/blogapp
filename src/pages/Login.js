@@ -51,6 +51,8 @@ function Signin() {
 
       if (response.ok) {
         localStorage.setItem("userId", data.userId);
+        localStorage.setItem("userName", data.name);
+
         Cookies.set("isLoggedIn", "true", { expires: 7 });
         Cookies.set("userEmail", email);
         Cookies.set("userPassword", password);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import {
   Button,
+  Box,
   Card,
   CardContent,
   Typography,
@@ -13,6 +14,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import MenuBar from "./MenuBar";
 
 function Dashboard() {
   const [posts, setPosts] = useState([]);
@@ -48,25 +50,7 @@ function Dashboard() {
 
   return (
     <div style={{ backgroundColor: "#FAF0E6", minHeight: "100vh" }}>
-      <AppBar position="static" sx={{ backgroundColor: "#DC143C" }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Dashboard
-          </Typography>
-          <Button color="inherit" onClick={() => navigate("/create")}>
-            Create Post
-          </Button>
-          <Button color="inherit" onClick={() => navigate("/dashboard")}>
-            View Posts
-          </Button>
-          <Button color="inherit" onClick={() => navigate("/profile")}>
-            Profile
-          </Button>
-          <Button color="inherit" onClick={() => navigate("/")}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <MenuBar />
 
       <div style={{ padding: "20px" }}>
         {posts.length === 0 ? (
@@ -83,6 +67,19 @@ function Dashboard() {
                   height="200"
                   image={`http://localhost:4000/uploads/${post.image}`}
                   alt={post.title}
+                />
+              )}
+              {post.videoUrl && (
+                <CardMedia
+                  component="iframe"
+                  height="315"
+                  src={post.videoUrl.replace("watch?v=", "embed/")}
+                  title="Post Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  sx={{
+                    borderRadius: "4px",
+                  }}
                 />
               )}
               <CardContent>

@@ -9,10 +9,11 @@ import {
   Container,
   Grid,
   Box,
+  Menu,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import MenuBar from "../components/MenuBar";
 function Profile() {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -56,59 +57,35 @@ function Profile() {
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleUpload = async () => {
-    if (!profilePhoto) return alert("Please select a photo first");
-    const formData = new FormData();
-    formData.append("profile", profilePhoto);
+  const handleUploadAndSave = async () => {
     try {
-      await axios.post(
-        `http://localhost:4000/api/auth/upload-profile/${userId}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      toast.success("Profile photo uploaded successfully");
-    } catch (err) {
-      console.error("Upload failed", err);
-      toast.error("Upload failed");
-    }
-  };
+      if (profilePhoto) {
+        const formData = new FormData();
+        formData.append("profile", profilePhoto);
+        await axios.post(
+          `http://localhost:4000/api/auth/upload-profile/${userId}`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+      }
 
-  const handleSave = async () => {
-    try {
       await axios.put(`http://localhost:4000/api/auth/user/${userId}`, {
         name,
         email,
         password,
         about,
       });
+
       toast.success("Profile updated successfully");
     } catch (err) {
-      console.error("Update failed", err);
-      toast.error("Update failed");
+      console.error("Operation failed", err);
+      toast.error("Update or upload failed");
     }
   };
 
   return (
     <div style={{ backgroundColor: "#FAF0E6", minHeight: "130vh" }}>
-      <AppBar position="static" sx={{ backgroundColor: "#DC143C" }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Dashboard
-          </Typography>
-          <Button color="inherit" onClick={() => navigate("/create")}>
-            Create Post
-          </Button>
-          <Button color="inherit" onClick={() => navigate("/dashboard")}>
-            View Posts
-          </Button>
-          <Button color="inherit" onClick={() => navigate("/profile")}>
-            Profile
-          </Button>
-          <Button color="inherit" onClick={() => navigate("/")}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <MenuBar />
 
       <Container maxWidth="sm" sx={{ mt: 4, mb: 6 }}>
         <Typography variant="h6" align="center" gutterBottom>
@@ -150,14 +127,6 @@ function Profile() {
               hidden
               onChange={handleFileChange}
             />
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={handleUpload}
-            sx={{ width: 150, height: 30 }}
-          >
-            Upload Photo
           </Button>
         </Box>
         <Grid
@@ -307,7 +276,7 @@ function Profile() {
                 color="primary"
                 fullWidth
                 sx={{ height: 40, width: 140 }}
-                onClick={handleSave}
+                onClick={handleUploadAndSave}
               >
                 Save Changes
               </Button>

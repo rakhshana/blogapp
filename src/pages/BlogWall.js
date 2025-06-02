@@ -22,10 +22,24 @@ function BlogWall() {
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
   const userId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
   const navigate = useNavigate();
+  const [visibleCount, setVisibleCount] = useState(3);
+  const [expandedPosts, setExpandedPosts] = useState({});
+
+  const togglePostExpansion = (postId) => {
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
 
   const handleHomeClick = () => {
-    navigate("*"); // change "/" to your actual home route if different
+    navigate("*");
+  };
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 3);
   };
 
   useEffect(() => {
@@ -35,7 +49,7 @@ function BlogWall() {
   const fetchAllPosts = async () => {
     try {
       const res = await axios.get("http://localhost:4000/api/auth/all");
-      setPosts(res.data.reverse());
+      setPosts(structuredClone(res.data.reverse()));
     } catch (err) {
       console.error("Error fetching posts", err);
     }
@@ -61,14 +75,18 @@ function BlogWall() {
     if (!text) return;
 
     try {
-      await axios.post(`http://localhost:4000/api/auth/${postId}/comment`, {
-        user: userId || "Anonymous",
-        text,
-      });
+      const res = await axios.post(
+        `http://localhost:4000/api/auth/${postId}/comment`,
+        {
+          userId,
+          text,
+        }
+      );
+      console.log("Comment submitted:", res.data);
       setCommentInputs({ ...commentInputs, [postId]: "" });
       fetchAllPosts();
     } catch (err) {
-      console.error("Error adding comment", err);
+      console.error("Error adding comment", err.response?.data || err.message);
     }
   };
 
@@ -84,6 +102,7 @@ function BlogWall() {
           </IconButton>
         </Toolbar>
       </AppBar>
+
       <Box
         sx={{
           minHeight: "100vh",
@@ -104,17 +123,20 @@ function BlogWall() {
         </Typography>
 
         <Grid container spacing={3} justifyContent="center">
-          {posts.map((post) => {
-            console.log("Post Creator:", post.userId);
+          {posts.slice(0, visibleCount).map((post) => {
+            const isExpanded = expandedPosts[post._id];
+            const shortContent =
+              post.content.split(" ").slice(0, 20).join(" ") + "...";
 
             return (
-              <Grid item xs={12} sm={10} md={8} key={post._id}>
+              <Grid item key={post._id}>
                 <Card
                   sx={{
+                    width: "700px",
                     backgroundColor: "#f5f5dc",
                     borderRadius: "16px",
                     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                    margin: "1.5rem 0",
+                    margin: "1.5rem auto",
                     padding: "1rem",
                   }}
                 >
@@ -124,6 +146,19 @@ function BlogWall() {
                       height="200"
                       image={`http://localhost:4000/uploads/${post.image}`}
                       alt={post.title}
+                    />
+                  )}
+                  {post.videoUrl && (
+                    <CardMedia
+                      component="iframe"
+                      height="315"
+                      src={post.videoUrl.replace("watch?v=", "embed/")}
+                      title="Post Video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      sx={{
+                        borderRadius: "4px",
+                      }}
                     />
                   )}
                   <CardContent>
@@ -200,59 +235,100 @@ function BlogWall() {
                         fontFamily: "Poppins, sans-serif",
                       }}
                     >
-                      {post.content}
+                      {isExpanded ? post.content : shortContent}
                     </Typography>
-
-                    <Box mt={2} display="flex" alignItems="center" gap={1}>
-                      <IconButton
-                        onClick={() => handleLike(post._id)}
-                        color="error"
-                      >
-                        <FavoriteIcon />
-                      </IconButton>
-                      <Typography>{post.likes?.length || 0} Likes</Typography>
-                    </Box>
-
-                    <Box mt={2}>
-                      <TextField
-                        size="small"
-                        fullWidth
-                        variant="outlined"
-                        placeholder="Add a comment..."
-                        value={commentInputs[post._id] || ""}
-                        onChange={(e) =>
-                          handleCommentChange(post._id, e.target.value)
-                        }
-                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
-                      />
-                      <Button
-                        variant="contained"
-                        onClick={() => handleCommentSubmit(post._id)}
-                        sx={{ marginTop: "0.5rem", backgroundColor: "#8fbc8f" }}
-                      >
-                        Comment
-                      </Button>
-                    </Box>
-
-                    {post.comments?.length > 0 && (
-                      <Box mt={2}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          Comments:
-                        </Typography>
-                        {post.comments.map((c, idx) => (
-                          <Typography
-                            key={idx}
-                            variant="body2"
-                            sx={{ color: "#81c784" }}
+                    <Button
+                      size="small"
+                      onClick={() => navigate(`/posts/${post._id}`)}
+                      sx={{ mt: 1, color: "#1976d2", textTransform: "none" }}
+                    >
+                      Read More
+                    </Button>
+                    {isExpanded && (
+                      <>
+                        <Box mt={2} display="flex" alignItems="center" gap={1}>
+                          <IconButton
+                            onClick={() => handleLike(post._id)}
+                            color="error"
                           >
-                            <strong>{c.user.name || "Anonymous"}:</strong>{" "}
-                            {c.text}
+                            <FavoriteIcon />
+                          </IconButton>
+                          <Typography>
+                            {post.likes?.length || 0} Likes
                           </Typography>
-                        ))}
-                      </Box>
+                        </Box>
+
+                        <Box mt={2}>
+                          <TextField
+                            size="small"
+                            fullWidth
+                            variant="outlined"
+                            placeholder="Add a comment..."
+                            value={commentInputs[post._id] || ""}
+                            onChange={(e) =>
+                              handleCommentChange(post._id, e.target.value)
+                            }
+                            sx={{
+                              backgroundColor: "#fff",
+                              borderRadius: "4px",
+                            }}
+                          />
+                          <Button
+                            variant="contained"
+                            onClick={() => handleCommentSubmit(post._id)}
+                            sx={{
+                              marginTop: "0.5rem",
+                              backgroundColor: "#8fbc8f",
+                            }}
+                          >
+                            Comment
+                          </Button>
+                        </Box>
+
+                        {post.comments?.length > 0 && (
+                          <Box mt={2}>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Comments:
+                            </Typography>
+
+                            {post.comments.map((c, idx) => (
+                              <Box
+                                key={idx}
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
+                                <Avatar
+                                  src={
+                                    c.user?.profilePhoto
+                                      ? `http://localhost:4000/${c.user.profilePhoto}`
+                                      : undefined
+                                  }
+                                  alt={c.user?.name || "User"}
+                                  sx={{ width: 32, height: 32 }}
+                                >
+                                  {!c.user?.profilePhoto && c.user?.name
+                                    ? c.user.name[0].toUpperCase()
+                                    : ""}
+                                </Avatar>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ color: "#555" }}
+                                >
+                                  <strong>
+                                    {c.user?.name || "Anonymous"}:
+                                  </strong>{" "}
+                                  {c.text}
+                                </Typography>
+                              </Box>
+                            ))}
+                          </Box>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>
@@ -261,23 +337,40 @@ function BlogWall() {
           })}
         </Grid>
 
-        <br />
-        <Box textAlign="center">
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/")}
-            sx={{
-              borderColor: "white",
-              color: "white",
-              "&:hover": {
+        {visibleCount < posts.length && (
+          <Box display="flex" justifyContent="center" gap={2} mb={2}>
+            <Button
+              variant="outlined"
+              onClick={handleLoadMore}
+              sx={{
                 borderColor: "white",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-              },
-            }}
-          >
-            Back to Home
-          </Button>
-        </Box>
+                width: "130px",
+                color: "white",
+                "&:hover": {
+                  borderColor: "white",
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              Load More
+            </Button>
+
+            <Button
+              variant="outlined"
+              onClick={() => navigate("/")}
+              sx={{
+                borderColor: "white",
+                color: "white",
+                "&:hover": {
+                  borderColor: "white",
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              Back to Home
+            </Button>
+          </Box>
+        )}
       </Box>
     </>
   );
