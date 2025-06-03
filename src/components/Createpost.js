@@ -6,13 +6,18 @@ import {
   Box,
   Paper,
   Container,
-  AppBar,
-  Toolbar,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import MenuBar from "./MenuBar";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Underline from "@tiptap/extension-underline";
 
 function getEmbedUrl(url) {
   if (!url) return "";
@@ -22,19 +27,15 @@ function getEmbedUrl(url) {
     const hostname = parsedUrl.hostname.toLowerCase();
 
     if (hostname.includes("youtube.com")) {
-      // YouTube URL like: https://www.youtube.com/watch?v=VIDEO_ID
       const videoId = parsedUrl.searchParams.get("v");
       return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
     } else if (hostname.includes("youtu.be")) {
-      // YouTube short URL like: https://youtu.be/VIDEO_ID
       const videoId = parsedUrl.pathname.slice(1);
       return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
     } else if (hostname.includes("vimeo.com")) {
-      // Vimeo URL like: https://vimeo.com/VIDEO_ID
       const videoId = parsedUrl.pathname.split("/")[1];
       return videoId ? `https://player.vimeo.com/video/${videoId}` : "";
     } else {
-      // For other links, just return original URL or empty string
       return "";
     }
   } catch (e) {
@@ -44,10 +45,18 @@ function getEmbedUrl(url) {
 
 function Createpost() {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
+  const [image, setImage] = useState(null);
+  const [saveAsHtml, setSaveAsHtml] = useState(true);
+  const [plainText, setPlainText] = useState("");
+
   const navigate = useNavigate();
+
+  // Initialize Tiptap editor with empty content
+  const editor = useEditor({
+    extensions: [StarterKit, Bold, Italic, Underline],
+    content: "",
+  });
 
   const handleCreate = async () => {
     const userId = Cookies.get("userId");
@@ -57,10 +66,30 @@ function Createpost() {
       return;
     }
 
+    if (saveAsHtml && !editor) {
+      alert("Editor is not ready.");
+      return;
+    }
+
+    // Prepare content based on toggle
+    const contentToSave = saveAsHtml ? editor.getHTML() : plainText;
+
+    if (!title.trim()) {
+      alert("Title cannot be empty.");
+      return;
+    }
+
+    if (!contentToSave.trim()) {
+      alert("Content cannot be empty.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("content", content);
+    formData.append("content", contentToSave); // Save content either as HTML or plain text
+    formData.append("contentType", saveAsHtml ? "html" : "text"); // Send content type to backend
     formData.append("userId", userId);
+
     if (image) {
       formData.append("image", image);
     }
@@ -87,6 +116,8 @@ function Createpost() {
     }
   };
 
+  if (saveAsHtml && !editor) return <div>Loading editor...</div>;
+
   return (
     <div style={{ backgroundColor: "#FAF0E6", minHeight: "100vh" }}>
       <MenuBar />
@@ -106,16 +137,46 @@ function Createpost() {
             margin="normal"
             sx={{ backgroundColor: "#fff" }}
           />
-          <TextField
-            fullWidth
-            label="Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            margin="normal"
-            multiline
-            rows={6}
-            sx={{ backgroundColor: "#fff" }}
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={saveAsHtml}
+                onChange={(e) => setSaveAsHtml(e.target.checked)}
+              />
+            }
+            label="Save content as rich text (HTML)"
+            sx={{ marginTop: 2 }}
           />
+
+          <Typography sx={{ marginTop: 2, marginBottom: 1 }}>
+            Content
+          </Typography>
+
+          {saveAsHtml ? (
+            <div
+              style={{
+                border: "1px solid gray",
+                borderRadius: "5px",
+                minHeight: "200px",
+                padding: "10px",
+                backgroundColor: "white",
+              }}
+            >
+              <EditorContent editor={editor} />
+            </div>
+          ) : (
+            <TextField
+              multiline
+              rows={8}
+              fullWidth
+              value={plainText}
+              onChange={(e) => setPlainText(e.target.value)}
+              sx={{ backgroundColor: "#fff" }}
+              placeholder="Enter plain text content here..."
+            />
+          )}
+
           <TextField
             label="Video URL"
             variant="outlined"
@@ -123,6 +184,7 @@ function Createpost() {
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
             placeholder="Enter video link (YouTube, Vimeo, etc.)"
+            sx={{ marginTop: 2 }}
           />
 
           <Box mt={2}>

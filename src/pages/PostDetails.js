@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 import axios from "axios";
 import {
   Typography,
@@ -164,9 +165,14 @@ function PostDetails() {
             <Typography variant="h4" gutterBottom>
               {post.title}
             </Typography>
-            <Typography variant="body1" paragraph>
-              {post.content}
-            </Typography>
+            <Typography
+              variant="body1"
+              paragraph
+              component="div"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(post.content),
+              }}
+            />
 
             <Box display="flex" alignItems="center" gap={1} mb={2}>
               <IconButton color="error" onClick={handleLike}>
