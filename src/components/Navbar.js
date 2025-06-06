@@ -15,6 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import MenuBar from "./MenuBar";
+import DOMPurify from "dompurify";
 
 function Dashboard() {
   const [posts, setPosts] = useState([]);
@@ -84,7 +85,14 @@ function Dashboard() {
               )}
               <CardContent>
                 <Typography variant="h6">{post.title}</Typography>
-                <Typography>{post.content}</Typography>
+                <Typography
+                  variant="body1"
+                  paragraph
+                  component="div"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(post.content),
+                  }}
+                />
 
                 <IconButton
                   onClick={() => handleDelete(post._id)}

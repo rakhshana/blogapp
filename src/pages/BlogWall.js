@@ -6,6 +6,7 @@ import Avatar from "@mui/material/Avatar";
 import InfoIcon from "@mui/icons-material/Info";
 import { IconButton, AppBar, Toolbar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import DOMPurify from "dompurify";
 import {
   Typography,
   Card,
@@ -35,7 +36,7 @@ function BlogWall() {
   };
 
   const handleHomeClick = () => {
-    navigate("*");
+    navigate("/");
   };
 
   const handleLoadMore = () => {
@@ -227,16 +228,17 @@ function BlogWall() {
                         </Tooltip>
                       )}
                     </Box>
-
                     <Typography
                       variant="body1"
-                      sx={{
-                        color: "#4b4b4b",
-                        fontFamily: "Poppins, sans-serif",
+                      paragraph
+                      component="div"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(
+                          isExpanded ? post.content : shortContent
+                        ),
                       }}
-                    >
-                      {isExpanded ? post.content : shortContent}
-                    </Typography>
+                    />
+
                     <Button
                       size="small"
                       onClick={() => navigate(`/posts/${post._id}`)}

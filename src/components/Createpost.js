@@ -6,18 +6,14 @@ import {
   Box,
   Paper,
   Container,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import MenuBar from "./MenuBar";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import Underline from "@tiptap/extension-underline";
+
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 function getEmbedUrl(url) {
   if (!url) return "";
@@ -47,16 +43,9 @@ function Createpost() {
   const [title, setTitle] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [image, setImage] = useState(null);
-  const [saveAsHtml, setSaveAsHtml] = useState(true);
-  const [plainText, setPlainText] = useState("");
+  const [contentHtml, setContentHtml] = useState("");
 
   const navigate = useNavigate();
-
-  // Initialize Tiptap editor with empty content
-  const editor = useEditor({
-    extensions: [StarterKit, Bold, Italic, Underline],
-    content: "",
-  });
 
   const handleCreate = async () => {
     const userId = Cookies.get("userId");
@@ -66,33 +55,26 @@ function Createpost() {
       return;
     }
 
-    if (saveAsHtml && !editor) {
-      alert("Editor is not ready.");
-      return;
-    }
-
-    // Prepare content based on toggle
-    const contentToSave = saveAsHtml ? editor.getHTML() : plainText;
-
     if (!title.trim()) {
-      alert("Title cannot be empty.");
+      toast.error("Title cannot be empty.");
       return;
     }
 
-    if (!contentToSave.trim()) {
-      alert("Content cannot be empty.");
+    if (!contentHtml.trim()) {
+      toast.error("Content cannot be empty.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("content", contentToSave); // Save content either as HTML or plain text
-    formData.append("contentType", saveAsHtml ? "html" : "text"); // Send content type to backend
+    formData.append("content", contentHtml);
+    formData.append("contentType", "html");
     formData.append("userId", userId);
 
     if (image) {
       formData.append("image", image);
     }
+
     if (videoUrl.trim() !== "") {
       const embedUrl = getEmbedUrl(videoUrl.trim());
       if (embedUrl) {
@@ -116,8 +98,6 @@ function Createpost() {
     }
   };
 
-  if (saveAsHtml && !editor) return <div>Loading editor...</div>;
-
   return (
     <div style={{ backgroundColor: "#FAF0E6", minHeight: "100vh" }}>
       <MenuBar />
@@ -138,44 +118,18 @@ function Createpost() {
             sx={{ backgroundColor: "#fff" }}
           />
 
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={saveAsHtml}
-                onChange={(e) => setSaveAsHtml(e.target.checked)}
-              />
-            }
-            label="Save content as rich text (HTML)"
-            sx={{ marginTop: 2 }}
-          />
-
           <Typography sx={{ marginTop: 2, marginBottom: 1 }}>
             Content
           </Typography>
 
-          {saveAsHtml ? (
-            <div
-              style={{
-                border: "1px solid gray",
-                borderRadius: "5px",
-                minHeight: "200px",
-                padding: "10px",
-                backgroundColor: "white",
-              }}
-            >
-              <EditorContent editor={editor} />
-            </div>
-          ) : (
-            <TextField
-              multiline
-              rows={8}
-              fullWidth
-              value={plainText}
-              onChange={(e) => setPlainText(e.target.value)}
-              sx={{ backgroundColor: "#fff" }}
-              placeholder="Enter plain text content here..."
-            />
-          )}
+          <CKEditor
+            editor={ClassicEditor}
+            data={contentHtml}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              setContentHtml(data);
+            }}
+          />
 
           <TextField
             label="Video URL"

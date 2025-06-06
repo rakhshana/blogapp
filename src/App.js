@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Signin from "./pages/Login";
 import Register from "./pages/Register";
@@ -47,7 +47,6 @@ function App() {
         />
         <Route path="/wall" element={<BlogWall />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
-        <Route path="*" element={<Home />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={2000} />
     </div>

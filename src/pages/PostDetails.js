@@ -106,7 +106,6 @@ function PostDetails() {
             />
           )}
           <CardContent>
-            {/* Video Section */}
             {post.videoUrl && (
               <Box
                 my={2}
@@ -181,7 +180,6 @@ function PostDetails() {
               <Typography>{post.likes?.length || 0} Likes</Typography>
             </Box>
 
-            {/* Comment input */}
             {isLoggedIn ? (
               <Box display="flex" gap={1} mb={2}>
                 <TextField
